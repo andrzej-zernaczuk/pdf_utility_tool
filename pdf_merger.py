@@ -9,22 +9,42 @@ def select_pdfs():
     for path in file_paths:
         listbox.insert(tk.END, path)
 
-# TODO: add persistent selection to the listbox
 def move_selected_pdfs_up():
     """Move selected PDF files up in the listbox."""
     selected_indices = listbox.curselection()
+
+    if any(i == 0 for i in selected_indices):
+        messagebox.showerror("Move Error", "Cannot move the first item up.")
+        return
+
     for i in selected_indices:
-        if i > 0:
-            listbox.insert(i - 1, listbox.get(i))
-            listbox.delete(i + 1)
+        pdf_path = listbox.get(i)
+        listbox.delete(i)
+        listbox.insert(i - 1, pdf_path)
+
+    listbox.select_clear(0, tk.END)
+
+    for i in selected_indices:
+        listbox.select_set(i - 1)
 
 def move_selected_pdfs_down():
     """Move selected PDF files down in the listbox."""
     selected_indices = listbox.curselection()
+
+    if any(i == listbox.size() - 1 for i in selected_indices):
+        messagebox.showerror("Move Error", "Cannot move the last item down.")
+        return
+
     for i in reversed(selected_indices):
-        if i < listbox.size() - 1:
-            listbox.insert(i + 2, listbox.get(i))
-            listbox.delete(i)
+        pdf_path = listbox.get(i)
+        listbox.delete(i)
+        listbox.insert(i + 1, pdf_path)
+
+    listbox.select_clear(0, tk.END)
+
+    for i in selected_indices:
+        listbox.select_set(i + 1)
+
 
 def remove_selected_pdfs():
     """Remove selected PDF files from the listbox."""
