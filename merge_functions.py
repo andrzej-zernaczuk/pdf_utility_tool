@@ -1,3 +1,4 @@
+import subprocess
 import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox
@@ -5,11 +6,15 @@ from tkinter import filedialog, messagebox
 from pypdf import PdfWriter
 from pypdf.errors import PyPdfError
 
-from utils import generate_suggested_filename
+from utils import generate_suggested_filename, open_file_with_default_app
 
 
-def select_pdfs(listbox: tk.Listbox):
-    """Select PDF files and add them to the listbox."""
+def select_pdfs(listbox: tk.Listbox) -> None:
+    """Select PDF files and add them to the listbox.
+
+    Args:
+        listbox: The listbox receiving selected PDF file paths.
+    """
     file_types: list[tuple] = [("PDF files", "*.pdf"), ("All files", "*.*")]
     file_paths = filedialog.askopenfilenames(title="Select PDF Files", filetypes=file_types)
     current_paths = listbox.get(0, tk.END)
@@ -32,8 +37,12 @@ def select_pdfs(listbox: tk.Listbox):
     listbox.focus_force()
 
 
-def move_selected_pdfs_up(listbox: tk.Listbox):
-    """Move selected PDF files up in the listbox."""
+def move_selected_pdfs_up(listbox: tk.Listbox) -> None:
+    """Move selected PDF files up in the listbox.
+
+    Args:
+        listbox: The listbox containing the selected PDF file paths.
+    """
     selected_indices = listbox.curselection()
 
     if any(i == 0 for i in selected_indices):
@@ -51,8 +60,12 @@ def move_selected_pdfs_up(listbox: tk.Listbox):
         listbox.select_set(i - 1)
 
 
-def move_selected_pdfs_down(listbox: tk.Listbox):
-    """Move selected PDF files down in the listbox."""
+def move_selected_pdfs_down(listbox: tk.Listbox) -> None:
+    """Move selected PDF files down in the listbox.
+
+    Args:
+        listbox: The listbox containing the selected PDF file paths.
+    """
     selected_indices = listbox.curselection()
 
     if any(i == listbox.size() - 1 for i in selected_indices):
@@ -91,8 +104,13 @@ def remove_duplicates(listbox: tk.Listbox, *, show_message: bool = True) -> None
         messagebox.showinfo("Success", "Duplicate PDF files were removed!", parent=listbox)
 
 
-def update_remove_duplicate_button_state(listbox: tk.Listbox, button: tk.Button):
-    """Update the state of the 'Remove Duplicate' button based on listbox content."""
+def update_remove_duplicate_button_state(listbox: tk.Listbox, button: tk.Button) -> None:
+    """Update the remove duplicate button state based on listbox content.
+
+    Args:
+        listbox: The listbox containing PDF file paths.
+        button: The button that removes duplicate paths.
+    """
     paths = listbox.get(0, tk.END)
     if len(paths) != len(set(paths)):  # Check if there are any duplicates
         button.config(state="normal")  # Enable the button if duplicates exist
@@ -100,20 +118,33 @@ def update_remove_duplicate_button_state(listbox: tk.Listbox, button: tk.Button)
         button.config(state="disabled")  # Disable the button if no duplicates
 
 
-def remove_selected_pdfs(listbox: tk.Listbox):
-    """Remove selected PDF files from the listbox."""
+def remove_selected_pdfs(listbox: tk.Listbox) -> None:
+    """Remove selected PDF files from the listbox.
+
+    Args:
+        listbox: The listbox containing selected PDF file paths.
+    """
     selected_indices = listbox.curselection()
     for i in reversed(selected_indices):
         listbox.delete(i)
 
 
-def remove_all_pdfs(listbox: tk.Listbox):
-    """Remove all PDF files from the listbox."""
+def remove_all_pdfs(listbox: tk.Listbox) -> None:
+    """Remove all PDF files from the listbox.
+
+    Args:
+        listbox: The listbox to clear.
+    """
     listbox.delete(0, tk.END)
 
 
-def merge_pdfs(listbox: tk.Listbox, suggest_name: bool = False):
-    """Merge the selected PDF files into a single PDF file"""
+def merge_pdfs(listbox: tk.Listbox, suggest_name: bool = False) -> None:
+    """Merge the selected PDF files into a single PDF file.
+
+    Args:
+        listbox: The listbox containing selected PDF file paths.
+        suggest_name: Whether to ask the configured LLM for a suggested file name.
+    """
     paths = listbox.get(0, tk.END)
     if not paths:
         messagebox.showwarning(
@@ -149,10 +180,22 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool = False):
             return  # User cancelled save
 
         writer.write(output_pdf_path)
-        messagebox.showinfo(
+        should_open_output = messagebox.askyesno(
             "Success",
-            "The PDF files have been successfully merged!",
+            "The PDF files have been successfully merged!\n\nOpen the merged PDF now?",
             parent=listbox,
         )
+        if should_open_output:
+            try:
+                open_file_with_default_app(output_pdf_path)
+            except (OSError, subprocess.SubprocessError) as e:
+                messagebox.showwarning(
+                    "Open File Failed",
+                    (
+                        "The PDF files were merged successfully, but the output file "
+                        f"could not be opened automatically:\n\n{e}"
+                    ),
+                    parent=listbox,
+                )
     except (OSError, PyPdfError) as e:
         messagebox.showerror("Error", f"An error occurred: {e}", parent=listbox)

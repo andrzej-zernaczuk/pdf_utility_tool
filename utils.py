@@ -1,5 +1,7 @@
 import datetime
 import os
+import subprocess
+import sys
 import tkinter as tk
 from pathlib import Path
 
@@ -114,6 +116,29 @@ def generate_suggested_filename(file_names: list[str], suggest_name: bool) -> st
         )
 
     return suggested_filename
+
+
+def open_file_with_default_app(file_path: str | Path) -> None:
+    """Open a file with the system's default application.
+
+    Args:
+        file_path: Path to the file that should be opened.
+
+    Raises:
+        OSError: If the current operating system cannot open the file.
+        subprocess.SubprocessError: If the platform open command fails.
+    """
+    resolved_path = Path(file_path).expanduser().resolve()
+
+    if sys.platform == "darwin":
+        subprocess.run(["open", str(resolved_path)], check=True)
+        return
+
+    if os.name == "nt":
+        os.startfile(resolved_path)  # type: ignore[attr-defined]
+        return
+
+    subprocess.run(["xdg-open", str(resolved_path)], check=True)
 
 
 def center_window(window: tk.Tk) -> None:
