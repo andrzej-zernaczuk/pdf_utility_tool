@@ -19,7 +19,7 @@ def open_converter_window(converter_window: tk.Frame) -> None:
 
     select_button = tk.Button(
         converter_window,
-        text='Select files for converting to PDF',
+        text="Select files for converting to PDF",
         width=25,
         command=lambda: select_files(listbox),
     )
@@ -27,7 +27,7 @@ def open_converter_window(converter_window: tk.Frame) -> None:
 
     remove_all_button = tk.Button(
         converter_window,
-        text='Remove all files',
+        text="Remove all files",
         command=lambda: remove_all_files(listbox),
     )
     remove_all_button.pack(fill=tk.X, padx=10)

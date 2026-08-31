@@ -4,8 +4,8 @@ from tkinter import filedialog
 
 def select_files(listbox: tk.Listbox):
     """Select files and add them to the listbox."""
-    file_types = [('All files', '*.*')]
-    file_paths = filedialog.askopenfilenames(title='Select Files', filetypes=file_types)
+    file_types = [("All files", "*.*")]
+    file_paths = filedialog.askopenfilenames(title="Select Files", filetypes=file_types)
     for path in file_paths:
         listbox.insert(tk.END, path)
 
