@@ -10,8 +10,8 @@ from utils import generate_suggested_filename
 
 def select_pdfs(listbox: tk.Listbox):
     """Select PDF files and add them to the listbox."""
-    file_types: list[tuple] = [('PDF files', '*.pdf'), ('All files', '*.*')]
-    file_paths = filedialog.askopenfilenames(title='Select PDF Files', filetypes=file_types)
+    file_types: list[tuple] = [("PDF files", "*.pdf"), ("All files", "*.*")]
+    file_paths = filedialog.askopenfilenames(title="Select PDF Files", filetypes=file_types)
     current_paths = listbox.get(0, tk.END)
     duplicate_paths: list = [path for path in file_paths if path in current_paths]
 
@@ -88,16 +88,16 @@ def remove_duplicates(listbox: tk.Listbox, *, show_message: bool = True) -> None
     for new_path in new_paths:
         listbox.insert(tk.END, new_path)
     if show_message:
-        messagebox.showinfo('Success', 'Duplicate PDF files were removed!', parent=listbox)
+        messagebox.showinfo("Success", "Duplicate PDF files were removed!", parent=listbox)
 
 
 def update_remove_duplicate_button_state(listbox: tk.Listbox, button: tk.Button):
     """Update the state of the 'Remove Duplicate' button based on listbox content."""
     paths = listbox.get(0, tk.END)
     if len(paths) != len(set(paths)):  # Check if there are any duplicates
-        button.config(state='normal')  # Enable the button if duplicates exist
+        button.config(state="normal")  # Enable the button if duplicates exist
     else:
-        button.config(state='disabled')  # Disable the button if no duplicates
+        button.config(state="disabled")  # Disable the button if no duplicates
 
 
 def remove_selected_pdfs(listbox: tk.Listbox):
@@ -112,20 +112,20 @@ def remove_all_pdfs(listbox: tk.Listbox):
     listbox.delete(0, tk.END)
 
 
-def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
+def merge_pdfs(listbox: tk.Listbox, suggest_name: bool = False):
     """Merge the selected PDF files into a single PDF file"""
     paths = listbox.get(0, tk.END)
     if not paths:
         messagebox.showwarning(
-            'No PDF Files Selected',
-            'Please select one or more PDF files to merge.',
+            "No PDF Files Selected",
+            "Please select one or more PDF files to merge.",
             parent=listbox,
         )
         return
     if len(paths) == 1:
         messagebox.showwarning(
-            'Not Enough PDF Files Selected',
-            'Please select at least two PDF files to merge.',
+            "Not Enough PDF Files Selected",
+            "Please select at least two PDF files to merge.",
             parent=listbox,
         )
         return
@@ -143,16 +143,16 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
             initialfile=suggested_name,
             defaultextension=".pdf",
             filetypes=[("PDF files", "*.pdf")],
-            parent=listbox
+            parent=listbox,
         )
         if not output_pdf_path:
             return  # User cancelled save
 
         writer.write(output_pdf_path)
         messagebox.showinfo(
-            'Success',
-            'The PDF files have been successfully merged!',
+            "Success",
+            "The PDF files have been successfully merged!",
             parent=listbox,
         )
     except (OSError, PyPdfError) as e:
-        messagebox.showerror('Error', f'An error occurred: {e}', parent=listbox)
+        messagebox.showerror("Error", f"An error occurred: {e}", parent=listbox)
