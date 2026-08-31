@@ -3,6 +3,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox
 
 import PyPDF2
+from PyPDF2.errors import PyPdfError
 
 from utils import generate_suggested_filename
 
@@ -18,7 +19,11 @@ def select_pdfs(listbox: tk.Listbox):
         listbox.insert(tk.END, path)
 
     if duplicate_paths:
-        remove_duplicates_flag: bool = messagebox.askyesno("Duplicate Files", "You have selected duplicate files. Do you want to remove them?", parent=listbox)
+        remove_duplicates_flag: bool = messagebox.askyesno(
+            "Duplicate Files",
+            "You have selected duplicate files. Do you want to remove them?",
+            parent=listbox,
+        )
 
         # if user selects YES remove duplicates
         if remove_duplicates_flag:
@@ -111,10 +116,18 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
     """Merge the selected PDF files into a single PDF file"""
     paths = listbox.get(0, tk.END)
     if not paths:
-        messagebox.showwarning('No PDF Files Selected', 'Please select one or more PDF files to merge.', parent=listbox)
+        messagebox.showwarning(
+            'No PDF Files Selected',
+            'Please select one or more PDF files to merge.',
+            parent=listbox,
+        )
         return
     if len(paths) == 1:
-        messagebox.showwarning('Not Enough PDF Files Selected', 'Please select at least two PDF files to merge.', parent=listbox)
+        messagebox.showwarning(
+            'Not Enough PDF Files Selected',
+            'Please select at least two PDF files to merge.',
+            parent=listbox,
+        )
         return
 
     file_names = [Path(path).stem for path in paths]
@@ -137,6 +150,10 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
 
         merger.write(output_pdf_path)
         merger.close()
-        messagebox.showinfo('Success', 'The PDF files have been successfully merged!', parent=listbox)
-    except Exception as e:
+        messagebox.showinfo(
+            'Success',
+            'The PDF files have been successfully merged!',
+            parent=listbox,
+        )
+    except (OSError, PyPdfError) as e:
         messagebox.showerror('Error', f'An error occurred: {e}', parent=listbox)

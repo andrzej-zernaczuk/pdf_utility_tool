@@ -81,7 +81,11 @@ def open_merger_window(merger_window: tk.Frame) -> None:
     remove_all_button.pack(fill=tk.X, padx=10)
 
     llm_var = BooleanVar(value=False)
-    merge_button = tk.Button(merger_window, text='Merge PDF files', command=lambda: merge_pdfs(listbox, llm_var.get()))
+    merge_button = tk.Button(
+        merger_window,
+        text='Merge PDF files',
+        command=lambda: merge_pdfs(listbox, llm_var.get()),
+    )
     merge_button.pack(fill=tk.X, padx=10)
 
     llm_switch = tk.Checkbutton(

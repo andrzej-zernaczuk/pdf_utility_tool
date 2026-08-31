@@ -4,8 +4,8 @@ import tkinter as tk
 from pathlib import Path
 
 from dotenv import load_dotenv
-from groq import Groq
-from openai import OpenAI
+from groq import Groq, GroqError
+from openai import OpenAI, OpenAIError
 from screeninfo import get_monitors
 
 ROOT_DIR = Path(__file__).resolve().parent
@@ -105,11 +105,13 @@ def generate_suggested_filename(file_names: list[str], suggest_name: bool) -> st
                 suggested_filename = content.strip()
         except ValueError as e:
             print(f"LLM API is not configured: {e}")
-        except Exception as e:
+        except (GroqError, OpenAIError) as e:
             print(f"An error occurred while calling the API: {e}")
 
     if not suggested_filename:
-        suggested_filename = f"merged_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        suggested_filename = (
+            f"merged_{datetime.datetime.now(tz=datetime.UTC).strftime('%Y%m%d_%H%M%S')}"
+        )
 
     return suggested_filename
 
