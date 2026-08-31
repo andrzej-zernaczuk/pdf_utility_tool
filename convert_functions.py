@@ -1,5 +1,6 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
+
 
 def select_files(listbox: tk.Listbox):
     """Select files and add them to the listbox."""
@@ -12,7 +13,7 @@ def select_files(listbox: tk.Listbox):
 
 
 def remove_all_files(listbox: tk.Listbox):
-    """Remove all files files from the listbox."""
+    """Remove all files from the listbox."""
     listbox.delete(0, tk.END)
 
 

@@ -1,8 +1,11 @@
-import PyPDF2
 import tkinter as tk
+from pathlib import Path
 from tkinter import filedialog, messagebox
 
+import PyPDF2
+
 from utils import generate_suggested_filename
+
 
 def select_pdfs(listbox: tk.Listbox):
     """Select PDF files and add them to the listbox."""
@@ -19,7 +22,7 @@ def select_pdfs(listbox: tk.Listbox):
 
         # if user selects YES remove duplicates
         if remove_duplicates_flag:
-            remove_duplicates(listbox)
+            remove_duplicates(listbox, show_message=False)
 
     listbox.focus_force()
 
@@ -62,8 +65,13 @@ def move_selected_pdfs_down(listbox: tk.Listbox):
         listbox.select_set(i + 1)
 
 
-def remove_duplicates(listbox: tk.Listbox):
-    """Remove duplicate PDF files from the listbox while preserving order."""
+def remove_duplicates(listbox: tk.Listbox, *, show_message: bool = True) -> None:
+    """Remove duplicate PDF files from the listbox while preserving order.
+
+    Args:
+        listbox: The listbox containing PDF file paths.
+        show_message: Whether to show a success dialog after removing duplicates.
+    """
     paths = listbox.get(0, tk.END)
     seen = set()
     new_paths = []
@@ -74,7 +82,8 @@ def remove_duplicates(listbox: tk.Listbox):
     listbox.delete(0, tk.END)
     for new_path in new_paths:
         listbox.insert(tk.END, new_path)
-    messagebox.showinfo('Success', 'Duplicate PDF files were removed!', parent=listbox)
+    if show_message:
+        messagebox.showinfo('Success', 'Duplicate PDF files were removed!', parent=listbox)
 
 
 def update_remove_duplicate_button_state(listbox: tk.Listbox, button: tk.Button):
@@ -108,10 +117,7 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
         messagebox.showwarning('Not Enough PDF Files Selected', 'Please select at least two PDF files to merge.', parent=listbox)
         return
 
-    # create a list from paths, from every path remove the part before the last slash
-    file_names = [path.split('/')[-1] for path in paths]
-    # if .pdf is present, remove it
-    file_names = [name.replace('.pdf', '') for name in file_names]
+    file_names = [Path(path).stem for path in paths]
 
     suggested_name: str = generate_suggested_filename(file_names, suggest_name)
 
