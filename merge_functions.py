@@ -2,8 +2,8 @@ import tkinter as tk
 from pathlib import Path
 from tkinter import filedialog, messagebox
 
-import PyPDF2
-from PyPDF2.errors import PyPdfError
+from pypdf import PdfWriter
+from pypdf.errors import PyPdfError
 
 from utils import generate_suggested_filename
 
@@ -135,9 +135,9 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
     suggested_name: str = generate_suggested_filename(file_names, suggest_name)
 
     try:
-        merger = PyPDF2.PdfMerger()
+        writer = PdfWriter()
         for path in paths:
-            merger.append(path)
+            writer.append(path)
 
         output_pdf_path = filedialog.asksaveasfilename(
             initialfile=suggested_name,
@@ -148,8 +148,7 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool=False):
         if not output_pdf_path:
             return  # User cancelled save
 
-        merger.write(output_pdf_path)
-        merger.close()
+        writer.write(output_pdf_path)
         messagebox.showinfo(
             'Success',
             'The PDF files have been successfully merged!',
