@@ -168,3 +168,6 @@ pdf_merger.spec
 
 # MacOS
 .DS_Store
+
+# Cursor plans
+.cursor/plans/*
