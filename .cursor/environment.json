@@ -1,0 +1,15 @@
+{
+  "name": "PDF Utility Tool",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": "."
+  },
+  "user": "ubuntu",
+  "install": "./scripts/cloud-agent-install.sh",
+  "terminals": [
+    {
+      "name": "pdf-utility-tool",
+      "command": "export PATH=\"$HOME/.local/bin:$PATH\" && cd /workspace && uv run python main.py"
+    }
+  ]
+}
