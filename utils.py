@@ -1,21 +1,29 @@
-import os
 import datetime
+import os
 import tkinter as tk
+
+from dotenv import load_dotenv
 from groq import Groq
 from openai import OpenAI
 from screeninfo import get_monitors
 
-api_provider = os.getenv('API_PROVIDER')
+load_dotenv()
 
-if api_provider == 'GROQ':
-    client = Groq(
-        api_key=os.getenv('GROQ_API_KEY'),
+api_provider = os.getenv("API_PROVIDER")
+
+if api_provider == "GROQ":
+    client: Groq | OpenAI = Groq(
+        api_key=os.getenv("GROQ_API_KEY"),
     )
-elif api_provider == 'OPENAI':
+elif api_provider == "OPENAI":
     client = OpenAI(
-        api_key=os.getenv('OPENAI_API_KEY'),
-        organization=os.getenv('OPENAI_ORG'),
-        project=os.getenv('OPENAI_PROJECT'),
+        api_key=os.getenv("OPENAI_API_KEY"),
+        organization=os.getenv("OPENAI_ORG"),
+        project=os.getenv("OPENAI_PROJECT"),
+    )
+else:
+    raise ValueError(
+        f"Unsupported API_PROVIDER: {api_provider!r}. Expected 'GROQ' or 'OPENAI'."
     )
 
 
@@ -39,18 +47,19 @@ def generate_suggested_filename(file_names: list[str], suggest_name: bool) -> st
                     {"role": "user", "content": prompt},
                 ],
                 # max_completion_tokens=20 #for GPT o1
-                max_tokens=20 # for GPT 4o and Groq
+                max_tokens=20,  # for GPT 4o and Groq
             )
             # Extract the suggestion from the response
             # TODO: check if this works for OPENAI
-            suggested_filename = response.choices[0].message.content
-            suggested_filename = suggested_filename.strip()
+            content = response.choices[0].message.content
+            if content is not None:
+                suggested_filename = content.strip()
         except Exception as e:
             print(f"An error occurred while calling the API: {e}")
 
     # if suggested_filename is empty, generate a default filename
     if not suggested_filename:
-        suggested_filename: str = f"merged_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        suggested_filename = f"merged_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
     return suggested_filename
 
@@ -77,4 +86,4 @@ def center_window(window: tk.Tk):
     y = monitor_y + (screen_height // 2) - (window_height // 2)
 
     # Set the geometry of the window (position only, no size)
-    window.geometry(f'+{x}+{y}')
+    window.geometry(f"+{x}+{y}")

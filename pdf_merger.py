@@ -1,8 +1,11 @@
 import tkinter as tk
 from tkinter import BooleanVar
 
+from merge_functions import (merge_pdfs, move_selected_pdfs_down,
+                             move_selected_pdfs_up, remove_all_pdfs,
+                             remove_duplicates, remove_selected_pdfs,
+                             select_pdfs, update_remove_duplicate_button_state)
 from utils import toggle_llm_api
-from merge_functions import select_pdfs, move_selected_pdfs_up, move_selected_pdfs_down, remove_duplicates, update_remove_duplicate_button_state, remove_selected_pdfs, remove_all_pdfs, merge_pdfs
 
 
 # Function to open the merger window
@@ -46,12 +49,14 @@ def open_merger_window(merger_window: tk.Frame):
     remove_all_button = tk.Button(merger_window, text='Remove all PDF files', command=lambda: [remove_all_pdfs(listbox), remove_duplicate_button.config(state='disabled')])
     remove_all_button.pack(fill=tk.X, padx=10)
 
-    # merge PDF files
+    llm_var = BooleanVar(value=False)
     merge_button = tk.Button(merger_window, text='Merge PDF files', command=lambda: merge_pdfs(listbox, llm_var.get()))
     merge_button.pack(fill=tk.X, padx=10)
 
-    # LLM API Switch
-    global llm_var
-    llm_var = BooleanVar(value=False) # Default value is False
-    llm_switch = tk.Checkbutton(merger_window, text="Use LLM for suggesting file name", variable=llm_var, command=toggle_llm_api(llm_var))
+    llm_switch = tk.Checkbutton(
+        merger_window,
+        text="Use LLM to suggest file name",
+        variable=llm_var,
+        command=lambda: toggle_llm_api(llm_var),
+    )
     llm_switch.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
