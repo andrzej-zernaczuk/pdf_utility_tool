@@ -6,7 +6,8 @@ from tkinter import filedialog, messagebox
 from pypdf import PdfWriter
 from pypdf.errors import PyPdfError
 
-from utils import generate_suggested_filename, open_file_with_default_app
+from llm import suggest_filename
+from utils import default_filename, open_file_with_default_app
 
 
 def select_pdfs(listbox: tk.Listbox) -> None:
@@ -163,7 +164,7 @@ def merge_pdfs(listbox: tk.Listbox, suggest_name: bool = False) -> None:
 
     file_names = [Path(path).stem for path in paths]
 
-    suggested_name: str = generate_suggested_filename(file_names, suggest_name)
+    suggested_name: str = suggest_filename(file_names) if suggest_name else default_filename()
 
     try:
         writer = PdfWriter()

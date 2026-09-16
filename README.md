@@ -28,7 +28,15 @@ make init_workspace
 
 ### Optional LLM configuration
 
-Copy `.env` and set `API_PROVIDER`, API keys, and model IDs to enable LLM-based filename suggestions during PDF merge.
+Copy `.env.example` to `.env` and fill in the three variables to enable AI-powered filename suggestions during PDF merge.
+
+```
+LLM_BASE_URL=https://api.groq.com/openai/v1   # any OpenAI-compatible endpoint
+LLM_API_KEY=your-api-key-here
+LLM_MODEL_ID=gemma2-9b-it
+```
+
+Any OpenAI-compatible provider works — Groq, OpenAI, Ollama (local), vLLM, Together AI, etc. Omit `LLM_BASE_URL` to use the default OpenAI endpoint. LLM suggestions are silently disabled when the variables are not set.
 
 ## Features
 
