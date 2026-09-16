@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import BooleanVar
 
+from llm import is_available
 from merge_functions import (
     merge_pdfs,
     move_selected_pdfs_down,
@@ -11,7 +12,6 @@ from merge_functions import (
     select_pdfs,
     update_remove_duplicate_button_state,
 )
-from utils import is_llm_available, toggle_llm_api
 
 
 def open_merger_window(merger_window: tk.Frame) -> None:
@@ -103,8 +103,7 @@ def open_merger_window(merger_window: tk.Frame) -> None:
         merger_window,
         text="Use LLM to suggest file name",
         variable=llm_var,
-        command=lambda: toggle_llm_api(llm_var),
     )
-    if not is_llm_available():
+    if not is_available():
         llm_switch.config(state="disabled")
     llm_switch.pack(side=tk.BOTTOM, fill=tk.X, pady=10, padx=10)
